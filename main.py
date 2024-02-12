@@ -1,3 +1,4 @@
+import re
 import whisper
 import hashlib
 from pytube import YouTube
@@ -54,6 +55,9 @@ def transcribe_audio_local(file_path, caption_path):
     
     transcribe = model.transcribe(video["file_name"])
     
+    caption_file_name = re.sub(r'\.[^.]+$', '', video["title"]) 
+    print("This is caption_file name: " + caption_file_name)
+
     segments = transcribe['segments']
 
     for segment in segments:
@@ -63,7 +67,7 @@ def transcribe_audio_local(file_path, caption_path):
         segmentId = segment['id']+1
         segment = f"{segmentId}\n{startTime} --> {endTime}\n{text[1:] if text[0] == ' ' else text}\n\n"
 
-        srtFilename = os.path.join(caption_path, video["title"]+".srt")
+        srtFilename = os.path.join(caption_path,caption_file_name +".srt")
         with open(srtFilename, 'a', encoding='utf-8') as srtFile:
             srtFile.write(segment)
 
@@ -91,38 +95,48 @@ def select_output_file():
     caption_path = filedialog.askdirectory(title="Select folder to put captions")
 
     
-    captionlocation_label.config(text=f"SRT file generated: {caption_path}") 
+    captionlocation_label.config(text=f"Output location for captions: {caption_path}") 
 
     return caption_path
 
 caption_path = "." 
-# Tkinter GUI
+
+# Create the main window
 root = tk.Tk()
-root.title("YouTube Transcription")
+root.title("Video Caption Transcription")
+
+# Frame for input section
+input_frame = tk.Frame(root)
+input_frame.pack(pady=10)
 
 # Label and Entry for YouTube URL
-url_label = Label(root, text="Enter YouTube URL or select a local video:")
-url_label.pack(pady=10)
+url_label = Label(input_frame, text="Enter YouTube URL or select a local video:")
+url_label.grid(row=0, column=0, pady=5, padx=5)
 
-entry = Entry(root, width=50)
-entry.pack(pady=10)
-
+entry = Entry(input_frame, width=50)
+entry.grid(row=0, column=1, pady=5, padx=5)
 
 # Button to select a local video file
-select_file_button = Button(root, text="Select Local File", command=select_local_file)
-select_file_button.pack(pady=10)
+select_file_button = Button(input_frame, text="Select Local Video File", command=select_local_file)
+select_file_button.grid(row=1, column=0, columnspan=2, pady=10)
+
+# Frame for output section
+output_frame = tk.Frame(root)
+output_frame.pack(pady=10)
+
 # Button to select output path of captions
-select_caption_button = Button(root, text="Select Output location for  File", command=select_output_file)
-select_caption_button.pack(pady=10)
+select_caption_button = Button(output_frame, text="Select Output Location for Caption File", command=select_output_file)
+select_caption_button.grid(row=1, column=1, pady=10)
 
 # Button to trigger the transcription
-submit_button = Button(root, text="Submit", command=on_submit)
-submit_button.pack(pady=10)
+submit_button = Button(output_frame, text="Submit", command=on_submit)
+submit_button.grid(row=1, column=2, pady=5, padx=5)
 
-# Label to display the result
+# Result label
 result_label = Label(root, text="")
 result_label.pack(pady=10)
-# Label to display the output location for captions
+
+# Caption location label
 captionlocation_label = Label(root, text="")
 captionlocation_label.pack(pady=10)
 
