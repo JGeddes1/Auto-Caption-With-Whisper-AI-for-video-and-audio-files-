@@ -39,7 +39,7 @@ def transcribe_audio(path):
         segmentId = segment['id']+1
         segment = f"{segmentId}\n{startTime} --> {endTime}\n{text[1:] if text[0] == ' ' else text}\n\n"
 
-        srtFilename = os.path.join(r"F:\Coding projects 2024\python\Whisper AI stuff", "subtitle.srt")
+        srtFilename = os.path.join(caption_path, video["title"] +".srt")
         with open(srtFilename, 'a', encoding='utf-8') as srtFile:
             srtFile.write(segment)
 
@@ -110,15 +110,15 @@ input_frame = tk.Frame(root)
 input_frame.pack(pady=10)
 
 # Label and Entry for YouTube URL
-url_label = Label(input_frame, text="Enter YouTube URL or select a local video:")
+url_label = Label(input_frame, text="Enter YouTube URL or select a local video below:")
 url_label.grid(row=0, column=0, pady=5, padx=5)
 
 entry = Entry(input_frame, width=50)
 entry.grid(row=0, column=1, pady=5, padx=5)
 
 # Button to select a local video file
-select_file_button = Button(input_frame, text="Select Local Video File", command=select_local_file)
-select_file_button.grid(row=1, column=0, columnspan=2, pady=10)
+select_file_button = Button(input_frame, text="Select Local Video File Here", command=select_local_file)
+select_file_button.grid(row=1, column=0)
 
 # Frame for output section
 output_frame = tk.Frame(root)
@@ -126,7 +126,7 @@ output_frame.pack(pady=10)
 
 # Button to select output path of captions
 select_caption_button = Button(output_frame, text="Select Output Location for Caption File", command=select_output_file)
-select_caption_button.grid(row=1, column=1, pady=10)
+select_caption_button.grid(row=1, column=0)
 
 # Button to trigger the transcription
 submit_button = Button(output_frame, text="Submit", command=on_submit)
